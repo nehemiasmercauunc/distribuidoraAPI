@@ -1,0 +1,11 @@
+
+"connectionString1": "Server=.\\SQLExpress;Database=DistribuidoraDB;Trusted_Connection=True;MultipleActiveResultSets=true;Trust Server Certificate=true",
+
+
+Api endpoints:
+- productos:
+	- [productos] : listado de productos; GET
+	- [producto] : un producto; GET
+	- [producto] : insert producto; POST
+	- [producto] : delete producto; DELETE
+	- [producto] : update producto; PUT
