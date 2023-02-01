@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace distriApi.Negocio.entidades;
+namespace distribuidoraAPI.Negocio.entidades;
 
 public partial class Producto
 {

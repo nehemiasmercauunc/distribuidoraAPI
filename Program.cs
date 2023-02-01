@@ -1,8 +1,9 @@
-using distriApi.Negocio.entidades;
+using distribuidoraAPI.Negocio.entidades;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 using Serilog;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,8 @@ builder.Services.AddDbContext<DistribuidoraDBContext>(opt =>
     opt.UseSqlServer(builder.Configuration.GetConnectionString("DistribuidoraDB"))
     .EnableSensitiveDataLogging(true));
 
+builder.Services.AddControllers().AddJsonOptions(x =>
+                x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
 builder.Services.AddEndpointsApiExplorer();
 //Añade descripción al archivo de Swagger

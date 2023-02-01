@@ -5,10 +5,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using distriApi.Negocio.entidades;
+using distribuidoraAPI.Negocio.entidades;
 using Serilog;
+using distrbuidoraAPI.Models;
 
-namespace rrhhApi.Controllers
+namespace distrbuidoraAPI.Controllers
 {
     [Route("api")]
     [Produces("application/json")]
@@ -25,7 +26,7 @@ namespace rrhhApi.Controllers
             _logger = logger;
         }
 
-        
+
         [HttpGet("productos")]
         public async Task<ActionResult<IEnumerable<Producto>>> GetProductos()
         {
@@ -45,20 +46,32 @@ namespace rrhhApi.Controllers
         }
 
         [HttpGet("producto/{id}")]
-        public async Task<ActionResult<Producto>> GetProducto(int id)
+        public async Task<ActionResult<ProductoModel>> GetProducto(int id)
         {
             try
             {
                 _logger.LogInformation("Método GET: obtener un producto");
 
-                var Producto = await _context.Producto.FindAsync(id);
+                var oProducto = await _context.Producto.Include(x => x.Proveedor).Include(x => x.Marca).Include(x => x.TipoProducto).Include(x => x.TipoDuracion).FirstOrDefaultAsync(x => x.ProductoId == id);
 
-                if (Producto == null)
+                ProductoModel oProductoViewModel = new ProductoModel();
+
+                oProductoViewModel.ProductoId = oProducto.ProductoId;
+                oProductoViewModel.TipoProductoId = oProducto.TipoProductoId;
+                oProductoViewModel.TipoDuracionId = oProducto.TipoDuracionId;
+                oProductoViewModel.MarcaId = oProducto.MarcaId;
+                oProductoViewModel.Nombre = oProducto.Nombre;
+                oProductoViewModel.PrecioCosto = (decimal)oProducto.PrecioCosto;
+                oProductoViewModel.Minimo = (int)oProducto.Minimo;
+                oProductoViewModel.Codigo = oProducto.Codigo;
+                oProductoViewModel.ProveedorId = (int)oProducto.ProveedorId;
+
+                if (oProducto == null)
                 {
                     return NotFound();
                 }
 
-                return Producto;
+                return oProductoViewModel;
             }
             catch (System.Exception ex)
             {
@@ -67,6 +80,44 @@ namespace rrhhApi.Controllers
                 _logger.LogError("Método GET: error: " + ex.Message);
             }
 
+        }
+
+        [HttpPost("producto")]
+        public async Task<ActionResult> PostProducto(ProductoModel producto)
+        {
+            if (producto == null)
+            {
+                return BadRequest();
+            }
+            Log.Information(producto.Codigo);
+
+            Producto oProducto = new Producto();
+            oProducto.Nombre = producto.Nombre.ToUpper();
+            oProducto.TipoDuracionId = producto.TipoDuracionId;
+            oProducto.TipoProductoId = producto.TipoProductoId;
+            oProducto.ProveedorId = producto.ProveedorId;
+            oProducto.MarcaId = producto.MarcaId;
+            oProducto.PrecioCosto = producto.PrecioCosto;
+            oProducto.Minimo = producto.Minimo;
+            oProducto.Codigo = producto.Codigo;
+            int[] depositosDefault = new int[1] { 1 };
+            producto.DepositosList = depositosDefault;
+            oProducto.FechaAlta = DateTime.Now;
+            oProducto.FechaModificacion = DateTime.Now;
+            oProducto.Activo = true;
+
+            _context.Producto.Add(oProducto);
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (System.Exception)
+            {
+                throw;
+            }
+
+            Log.Information("Método POST: crea un producto");
+            return Ok();
         }
 
         [HttpPut("producto/{id}")]
@@ -99,7 +150,7 @@ namespace rrhhApi.Controllers
             return NoContent();
         }
 
-        
+
         [HttpDelete("producto/{id}")]
         public async Task<IActionResult> DeleteProducto(int id)
         {

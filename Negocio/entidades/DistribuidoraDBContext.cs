@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
-namespace distriApi.Negocio.entidades;
+namespace distribuidoraAPI.Negocio.entidades;
 
 public partial class DistribuidoraDBContext : DbContext
 {
@@ -109,8 +109,8 @@ public partial class DistribuidoraDBContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=DistribuidoraDB;Data Source=localhost;Encrypt=False");
-        /*=> optionsBuilder.UseSqlServer("Server=.\\SQLExpress;Database=DistribuidoraDB;Trusted_Connection=True;MultipleActiveResultSets=true;Trust Server Certificate=true");*/
+        /*=> optionsBuilder.UseSqlServer("Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=DistribuidoraDB;Data Source=localhost;Encrypt=False");*/
+        => optionsBuilder.UseSqlServer("Server=.\\SQLExpress;Database=DistribuidoraDB;Trusted_Connection=True;MultipleActiveResultSets=true;Trust Server Certificate=true");
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.UseCollation("Modern_Spanish_CI_AS");
